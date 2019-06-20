@@ -165,6 +165,37 @@ If no such secret exists in the Kubernetes API, or the kubelet is unable to fetc
 
 If the secret is retrieved successfully, the kubelet passes it to the CSI driver in the `NodePublishVolumeRequest.secrets` field.
 
+## Controller Expand Secret
+
+The CSI `external-provisioner` looks for the following keys in `StorageClass.parameters`:
+
+* `csi.storage.k8s.io/controller-expand-secret-name`
+* `csi.storage.k8s.io/controller-expand-secret-namespace`
+
+The value of both parameters refers to the name and namespace of the `Secret` object in the Kubernetes API.
+
+The value of both parameters may be a literal or a template containing the following variables that are automatically replaced by the `external-provisioner` at provision time:
+
+  * `${pv.name}`
+    * Automatically replaced with the name of the `PersistentVolume` object being provisioned.
+  * `${pvc.namespace}`
+    * Automatically replaced with the namespace of the `PersistentVolumeClaim` object being provisioned.
+
+The value of `csi.storage.k8s.io/controller-expand-secret-name` also supports the following template variables which are automatically replaced by the `external-provisioner` at provision time:
+
+  * `${pvc.name}`
+    * Automatically replaced with the name of the `PersistentVolumeClaim` object being provisioned.
+  * `${pvc.annotations['<ANNOTATION_KEY>']}` (e.g. `${pvc.annotations['example.com/key']}`)
+    * Automatically replaced with the value of the specified annotation from the `PersistentVolumeClaim` object being provisioned.
+
+If specified, once provisioning is successful, the CSI `external-provisioner` sets the `CSIPersistentVolumeSource.ControllerExpandSecretRef` field in the new `PersistentVolume` object to refer to this secret.
+
+If specified, the Kubernetes kubelet, attempts to fetch the secret referenced by the `CSIPersistentVolumeSource.ControllerExpandSecretRef` field before a mount operation.
+
+If no such secret exists in the Kubernetes API, or the kubelet is unable to fetch it, the mount operation fails.
+
+If the secret is retrieved successfully, the kubelet passes it to the CSI driver in the `ControllerExpandVolumeRequest.secrets` field.
+
 ## Example Storage Classes 
 
 The following storage classes supply secrets to a sample CSI driver named `csi-driver.team.example.com`.

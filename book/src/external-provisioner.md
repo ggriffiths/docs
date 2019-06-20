@@ -56,6 +56,8 @@ The following reserved `StorageClass` parameter keys trigger behavior in the CSI
 * `csi.storage.k8s.io/node-stage-secret-namespace`
 * `csi.storage.k8s.io/node-publish-secret-name`
 * `csi.storage.k8s.io/node-publish-secret-namespace`
+* `csi.storage.k8s.io/controller-expand-secret-name`
+* `csi.storage.k8s.io/controller-expand-secret-namespace`
 * `csi.storage.k8s.io/fstype`
 
 If the PVC `VolumeMode` is set to `Filesystem`, and the value of `csi.storage.k8s.io/fstype` is specified, it is used to populate the `FsType` in `CreateVolumeRequest.VolumeCapabilities[x].AccessType` and the `AccessType` is set to `Mount`.
